@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - EcoDrop @ ESUMS</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="login.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <img src="footer_logo.png" alt="School Logo" class="logo" />
+      <span class="site-name">I ♻ EcoDrop @ ESUMS</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="login.html" class="active">Login</a></li>
+      <li><a href="register.html">Register</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- Login Form -->
+  <main>
+    <section class="form-container">
+      <h1>Login</h1>
+      <form id="login-form">
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <button type="submit">Login</button>
+        <p id="error-msg" style="color: red; display: none;"></p>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>Made for ESUMS Students • Recycle Smart</p>
+  </footer>
+
+  <!-- Script -->
+  <script>
+    const loginForm = document.getElementById("login-form");
+    const errorMsg = document.getElementById("error-msg");
+
+    loginForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const password = document.getElementById("password").value;
+
+      const userDataRaw = localStorage.getItem(`user_${email}`);
+      if (!userDataRaw) {
+        errorMsg.textContent = "❌ Invalid email or password.";
+        errorMsg.style.display = "block";
+        return;
+      }
+
+      const userData = JSON.parse(userDataRaw);
+      if (userData.password !== password) {
+        errorMsg.textContent = "❌ Invalid email or password.";
+        errorMsg.style.display = "block";
+        return;
+      }
+
+      localStorage.setItem("loggedInUser", email);
+      window.location.href = "index.html";
+    });
+  </script>
+</body>
+</html>
+

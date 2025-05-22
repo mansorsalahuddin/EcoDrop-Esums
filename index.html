@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EcoDrop @ ESUMS</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="login.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <img src="footer_logo.png" alt="School Logo" class="logo" />
+      <span class="site-name">I ♻ EcoDrop @ ESUMS</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="login.html">Login</a></li>
+      <li><a href="register.html">Register</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div id="user-icon-container" style="position: relative;"></div>
+  </nav>
+
+  <!-- Header -->
+  <header>
+    <h1>♻️ EcoDrop @ ESUMS</h1>
+    <p>Recycle. Earn. Dress Down Free.</p>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <div class="coin-counter">🪙 Your EcoCoins: <span id="coin-count">0</span></div>
+    <button id="scan-btn">📷 Scan Item</button>
+    <div id="scan-result" style="margin-top: 10px;"></div>
+    <div id="reader" style="width: 100%; max-width: 400px; height: 300px; margin: 20px auto; display: none; border: 2px solid #4caf50; border-radius: 10px;"></div>
+
+
+
+    <section class="how-it-works">
+      <h2>How It Works</h2>
+      <ul>
+        <li>📦 Scan a recyclable item</li>
+        <li>✅ If it's recyclable, earn 10 EcoCoins</li>
+        <li>🎁 100 coins = Free Dress Down Day</li>
+      </ul>
+    </section>
+
+    <section class="leaderboard">
+      <h2>♻️ Top Recyclers This Week</h2>
+      <ul>
+        <li>👑 IDK. – 230 EcoCoins</li>
+        <li>🥈 IDK M. – 200 EcoCoins</li>
+        <li>🥉 IDK S. – 180 EcoCoins</li>
+      </ul>
+    </section>
+
+    <section id="redeem-section" style="display: none;">
+      <button id="redeem-btn">🎁 Redeem 100 Coins for Dress Down Day!</button>
+    </section>
+  </main>
+
+  <p>👋 Logged in as: <strong id="username-display"></strong> <button onclick="logout()">Logout</button></p>
+
+  <footer>
+    <p>Made for ESUMS Students • Recycle Smart</p>
+  </footer>
+
+  <!-- Script -->
+  <script>
+    const currentUser = localStorage.getItem("loggedInUser");
+    if (!currentUser) {
+      window.location.href = "login.html";
+    } else {
+      document.getElementById("username-display").textContent = currentUser;
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "login.html";
+    }
+  </script>
+  <script src="app.js"></script>
+  <button id="scan-btn">📷 Scan Item</button>
+<div id="scan-result"></div>
+<div id="reader" style="display: none; width: 100%; max-width: 400px; height: 300px;"></div>
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="app.js"></script>
+<h2>Welcome to EcoDrop</h2>
+
+<div id="coin-section">
+  Coins: <span id="coin-count">0</span>
+</div>
+
+<button id="scan-btn">📷 Scan Item</button>
+<div id="scan-result" style="margin: 10px 0;"></div>
+
+<!-- SCANNER PREVIEW DIV -->
+<div id="reader" style="display: none; width: 300px; height: 300px;"></div>
+
+<!-- Redeem -->
+<div id="redeem-section" style="display: none;">
+  <button id="redeem-btn">🎁 Redeem 100 Coins for Dress Down Day</button>
+</div>
+
+<!-- JS Libraries -->
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="scanner.js"></script>
+</body>
+</html>

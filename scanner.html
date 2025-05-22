@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>QR & Barcode Scanner</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <style>
+    #reader {
+      width: 100%;
+      max-width: 500px;
+      margin: auto;
+      display: none; /* hide scanner initially */
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+    }
+    #scan-button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2 style="text-align:center;">QR / Barcode Scanner</h2>
+
+  <button id="scan-button">Scan item</button>
+  <div id="reader"></div>
+  <div id="result">Scan a code...</div>
+
+  <script>
+    let scannerVisible = false;
+    const scanButton = document.getElementById('scan-button');
+    const reader = document.getElementById('reader');
+    const result = document.getElementById('result');
+
+    // Create the scanner instance but do NOT render yet
+    const html5QrcodeScanner = new Html5Qrcode("reader");
+
+    function onScanSuccess(decodedText, decodedResult) {
+      result.innerText = `Scanned: ${decodedText}`;
+      // Optionally stop scanning after one successful scan:
+      // html5QrcodeScanner.stop().then(() => {
+      //   reader.style.display = 'none';
+      //   scannerVisible = false;
+      //   scanButton.innerText = 'Scan item';
+      // }).catch(err => {
+      //   console.error('Failed to stop scanner:', err);
+      // });
+    }
+
+    scanButton.addEventListener('click', () => {
+      if (!scannerVisible) {
+        reader.style.display = 'block';
+        scanButton.innerText = 'Stop scanning';
+
+        html5QrcodeScanner.start(
+          { facingMode: "environment" }, // Use back camera if available
+          {
+            fps: 10,
+            qrbox: 250
+          },
+          onScanSuccess
+        ).catch(err => {
+          console.error('Unable to start scanning:', err);
+          result.innerText = 'Error starting scanner: ' + err;
+          reader.style.display = 'none';
+          scanButton.innerText = 'Scan item';
+          scannerVisible = false;
+        });
+
+        scannerVisible = true;
+      } else {
+        html5QrcodeScanner.stop().then(() => {
+          reader.style.display = 'none';
+          scanButton.innerText = 'Scan item';
+          scannerVisible = false;
+          result.innerText = 'Scan stopped.';
+        }).catch(err => {
+          console.error('Unable to stop scanning:', err);
+          result.innerText = 'Error stopping scanner: ' + err;
+        });
+      }
+    });
+  </script>
+</body>
+</html>
+

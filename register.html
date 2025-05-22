@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Register - EcoDrop @ ESUMS</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="login.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-left">
+      <img src="footer_logo.png" alt="Logo" class="logo" />
+      <span class="site-name">EcoDrop @ ESUMS</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="login.html">Login</a></li>
+      <li><a href="register.html">Register</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <div class="login-container">
+    <h1>Create Account</h1>
+    <input type="text" id="reg-firstname" placeholder="First Name" />
+    <input type="text" id="reg-lastname" placeholder="Last Name" />
+    <input type="email" id="reg-email" placeholder="Email" />
+    <input type="password" id="reg-password" placeholder="Password" />
+    <input type="text" id="reg-school" value="ESUMS" disabled />
+    <button onclick="register()">Register</button>
+    <p>Already have an account? <a href="login.html">Login here</a>.</p>
+  </div>
+
+  <script>
+    function register() {
+      const firstName = document.getElementById("reg-firstname").value.trim();
+      const lastName = document.getElementById("reg-lastname").value.trim();
+      const email = document.getElementById("reg-email").value.trim().toLowerCase();
+      const password = document.getElementById("reg-password").value;
+      const school = document.getElementById("reg-school").value;
+
+      if (!firstName || !lastName || !email || !password) {
+        alert("Please fill out all fields.");
+        return;
+      }
+
+      if (!validateEmail(email)) {
+        alert("Please enter a valid email.");
+        return;
+      }
+
+      if (localStorage.getItem(`user_${email}`)) {
+        alert("Email already registered. Try logging in.");
+        return;
+      }
+
+      const userData = {
+        firstName,
+        lastName,
+        email,
+        password,
+        school
+      };
+
+      // Save user data
+      localStorage.setItem(`user_${email}`, JSON.stringify(userData));
+
+      // Log in immediately by setting loggedInUser
+      localStorage.setItem("loggedInUser", email);
+
+      alert("✅ Registered successfully! You are now logged in.");
+      window.location.href = "index.html"; // Redirect to main page logged in
+    }
+
+    function validateEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
+  </script>
+</body>
+</html>
