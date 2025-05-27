@@ -2,28 +2,59 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>EcoDrop @ ESUMS</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="login.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="login.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet"/>
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <style>
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+    .close {
+      float: right;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .nav-right button {
+      margin-left: 10px;
+      padding: 5px 10px;
+    }
+  </style>
 </head>
 <body>
 
   <!-- Navbar -->
   <nav class="navbar">
     <div class="nav-left">
-      <img src="footer_logo.png" alt="School Logo" class="logo" />
+      <img src="footer_logo.png" alt="School Logo" class="logo"/>
       <span class="site-name">I ♻ EcoDrop @ ESUMS</span>
     </div>
     <ul class="nav-links">
       <li><a href="index.html" class="active">Home</a></li>
-      <li><a href="login.html">Login</a></li>
-      <li><a href="register.html">Register</a></li>
+      <li><a href="#" id="open-login">Login</a></li>
+      <li><a href="#" id="open-register">Register</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
-    <div id="user-icon-container" style="position: relative;"></div>
+    <div class="nav-right" id="user-display">
+      <!-- Login/Register buttons or username + logout -->
+    </div>
   </nav>
 
   <!-- Header -->
@@ -38,8 +69,6 @@
     <button id="scan-btn">📷 Scan Item</button>
     <div id="scan-result" style="margin-top: 10px;"></div>
     <div id="reader" style="width: 100%; max-width: 400px; height: 300px; margin: 20px auto; display: none; border: 2px solid #4caf50; border-radius: 10px;"></div>
-
-
 
     <section class="how-it-works">
       <h2>How It Works</h2>
@@ -64,51 +93,108 @@
     </section>
   </main>
 
-  <p>👋 Logged in as: <strong id="username-display"></strong> <button onclick="logout()">Logout</button></p>
-
   <footer>
     <p>Made for ESUMS Students • Recycle Smart</p>
   </footer>
 
-  <!-- Script -->
+  <!-- Login Modal -->
+  <div class="modal" id="login-modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('login-modal')">&times;</span>
+      <h2>Login</h2>
+      <input type="email" id="login-email" placeholder="Email"><br><br>
+      <input type="password" id="login-password" placeholder="Password"><br><br>
+      <button onclick="login()">Login</button>
+      <p id="login-error" style="color: red;"></p>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div class="modal" id="register-modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('register-modal')">&times;</span>
+      <h2>Register</h2>
+      <input type="text" id="reg-firstname" placeholder="First Name"><br><br>
+      <input type="text" id="reg-lastname" placeholder="Last Name"><br><br>
+      <input type="email" id="reg-email" placeholder="Email"><br><br>
+      <input type="password" id="reg-password" placeholder="Password"><br><br>
+      <button onclick="register()">Register</button>
+      <p id="register-error" style="color: red;"></p>
+    </div>
+  </div>
+
+  <script src="scanner.js"></script>
   <script>
     const currentUser = localStorage.getItem("loggedInUser");
-    if (!currentUser) {
-      window.location.href = "login.html";
-    } else {
-      document.getElementById("username-display").textContent = currentUser;
+    const userDisplay = document.getElementById("user-display");
+
+    function renderUserUI() {
+      if (currentUser) {
+        userDisplay.innerHTML = `👋 Logged in as: <strong>${currentUser}</strong> <button onclick="logout()">Logout</button>`;
+      } else {
+        userDisplay.innerHTML = `<button id="open-login">Login</button><button id="open-register">Register</button>`;
+      }
+    }
+
+    renderUserUI();
+
+    document.body.addEventListener("click", function(e) {
+      if (e.target.id === "open-login") {
+        document.getElementById("login-modal").style.display = "flex";
+      } else if (e.target.id === "open-register") {
+        document.getElementById("register-modal").style.display = "flex";
+      }
+    });
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = "none";
+    }
+
+    function login() {
+      const email = document.getElementById("login-email").value.trim().toLowerCase();
+      const password = document.getElementById("login-password").value;
+      const error = document.getElementById("login-error");
+
+      const userData = JSON.parse(localStorage.getItem(`user_${email}`) || "{}");
+      if (userData && userData.password === password) {
+        localStorage.setItem("loggedInUser", email);
+        location.reload();
+      } else {
+        error.textContent = "❌ Invalid email or password.";
+      }
+    }
+
+    function register() {
+      const first = document.getElementById("reg-firstname").value.trim();
+      const last = document.getElementById("reg-lastname").value.trim();
+      const email = document.getElementById("reg-email").value.trim().toLowerCase();
+      const pass = document.getElementById("reg-password").value;
+      const error = document.getElementById("register-error");
+
+      if (!first || !last || !email || !pass) {
+        error.textContent = "Please fill all fields.";
+        return;
+      }
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        error.textContent = "Invalid email format.";
+        return;
+      }
+
+      if (localStorage.getItem(`user_${email}`)) {
+        error.textContent = "Email already registered.";
+        return;
+      }
+
+      localStorage.setItem(`user_${email}`, JSON.stringify({ firstName: first, lastName: last, password: pass, email }));
+      localStorage.setItem("loggedInUser", email);
+      location.reload();
     }
 
     function logout() {
       localStorage.removeItem("loggedInUser");
-      window.location.href = "login.html";
+      location.reload();
     }
   </script>
-  <script src="app.js"></script>
-  <button id="scan-btn">📷 Scan Item</button>
-<div id="scan-result"></div>
-<div id="reader" style="display: none; width: 100%; max-width: 400px; height: 300px;"></div>
-<script src="https://unpkg.com/html5-qrcode"></script>
-<script src="app.js"></script>
-<h2>Welcome to EcoDrop</h2>
-
-<div id="coin-section">
-  Coins: <span id="coin-count">0</span>
-</div>
-
-<button id="scan-btn">📷 Scan Item</button>
-<div id="scan-result" style="margin: 10px 0;"></div>
-
-<!-- SCANNER PREVIEW DIV -->
-<div id="reader" style="display: none; width: 300px; height: 300px;"></div>
-
-<!-- Redeem -->
-<div id="redeem-section" style="display: none;">
-  <button id="redeem-btn">🎁 Redeem 100 Coins for Dress Down Day</button>
-</div>
-
-<!-- JS Libraries -->
-<script src="https://unpkg.com/html5-qrcode"></script>
-<script src="scanner.js"></script>
 </body>
 </html>
